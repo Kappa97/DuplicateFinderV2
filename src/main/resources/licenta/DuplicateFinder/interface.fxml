@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="licenta.DuplicateFinder.Controller">
+    <center>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+
+            <Label text="Primul tab" />
+            <center>
+                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                    <tabs>
+                        <Tab text="STEP 1">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="790.0">
+                                    <children>
+                                        <ListView fx:id="list" layoutX="283.0" layoutY="72.0" prefHeight="200.0" prefWidth="334.0" />
+                                        <Label layoutX="361.0" layoutY="46.0" text="Add folders to include in the scan" />
+                                        <Button fx:id="btnRemoveDirectory" layoutX="283.0" layoutY="305.0" mnemonicParsing="false" onAction="#btnRemoveDirectoryAddAction" prefHeight="26.0" prefWidth="139.0" text="Remove Directory" />
+                                        <Button fx:id="btnAddDirectory" layoutX="492.0" layoutY="305.0" mnemonicParsing="false" onAction="#btnAddDirectoryAddAction" prefHeight="26.0" prefWidth="128.0" text="Add Directory" />
+                                        <Button fx:id="btnClear" layoutX="283.0" layoutY="341.0" mnemonicParsing="false" onAction="#btnClearAddAction" prefHeight="26.0" prefWidth="140.0" text="Clear" />
+                                        <CheckBox fx:id="chckbxCompareByBytes" layoutX="492.0" layoutY="354.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="130.0" text="Compare by bytes" />
+                                        <Button fx:id="btnStartScan" layoutX="333.0" layoutY="389.0" mnemonicParsing="false" onAction="#btnStartScanAddAction" prefHeight="60.0" prefWidth="222.0" text="START SCAN" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab text="STEP 2">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                            </content>
+                        </Tab>
+                        <Tab text="STEP 3">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <TableView fx:id="tableView" layoutX="14.0" layoutY="65.0" prefHeight="317.0" prefWidth="635.0">
+                                            <columns>
+                                                <TableColumn fx:id="checkBoxTableColumn" prefWidth="60.00000190734863" text="Select" />
+                                                <TableColumn fx:id="fileNameTableColumn" prefWidth="95.99999237060547" text="File Name" />
+                                                <TableColumn fx:id="filePathTableColumn" prefWidth="203.20001220703125" text="Path" />
+                                                <TableColumn fx:id="fileSizeTableColumn" prefWidth="65.5999755859375" text="Size" />
+                                                <TableColumn fx:id="fileGroupTableColumn" prefWidth="48.800048828125" text="Group" />
+                                                <TableColumn fx:id="fileLastModifiedDateTableColumn" prefWidth="163.19998168945312" text="Last Modified Data" />
+                                            </columns>
+                                        </TableView>
+                                        <CheckBox fx:id="chckbxSelectAll" layoutX="14.0" layoutY="409.0" mnemonicParsing="false" onAction="#chckbxSelectAllAddAction" prefHeight="18.0" prefWidth="151.0" text="Select All Dupliactes" />
+                                        <Button fx:id="btnDeleteDuplicates" layoutX="14.0" layoutY="437.0" mnemonicParsing="false" onAction="#btnDeleteDuplicatesAddAction" prefHeight="26.0" prefWidth="151.0" text="Delete Selected Files" />
+                                        <Button fx:id="btnClearTable" layoutX="209.0" layoutY="437.0" mnemonicParsing="false" onAction="#btnClearTableAddAction" prefHeight="26.0" prefWidth="180.0" text="Clear Table" />
+                                        <ImageView fx:id="imageView" fitHeight="315.0" fitWidth="408.0" layoutX="665.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" />
+                                        <TextArea fx:id="textArea" layoutX="665.0" layoutY="71.0" prefHeight="318.0" prefWidth="408.0" />
+                                        <Button fx:id="btnTest" layoutX="459.0" layoutY="438.0" mnemonicParsing="false" onAction="#btnTextAddAction" text="Button" />
+                                        <Label layoutX="665.0" layoutY="39.0" prefHeight="18.0" prefWidth="103.0" text="Label" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+            </center>
+
+        </BorderPane>
+    </center>
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+</BorderPane>
