@@ -3,17 +3,19 @@ package licenta.DuplicateFinder;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 
 
 import javafx.event.ActionEvent;
-
 
 
 import java.io.File;
@@ -25,6 +27,16 @@ import java.util.ResourceBundle;
 
 
 public class Controller implements Initializable {
+
+    @FXML
+    private TabPane tabPane;
+
+    @FXML
+    private Tab tabStep1;
+    @FXML
+    private Tab tabStep2;
+    @FXML
+    private Tab tabStep3;
 
     //Step 1
     @FXML
@@ -44,6 +56,23 @@ public class Controller implements Initializable {
 
     @FXML
     private ListView list;
+
+
+    //Step 2
+    @FXML
+    private Button btnViewResults;
+
+    @FXML
+    private Label labelFilesScaned;
+
+    @FXML
+    private Label labelDuplicatesFound;
+
+    @FXML
+    private Label labelSpaceUsed;
+
+    @FXML
+    private VBox vBoxARC;
 
 
     //Step 3
@@ -69,7 +98,10 @@ public class Controller implements Initializable {
     private TableColumn<MyFileObjectWithCheckBox, String> fileLastModifiedDateTableColumn;
 
     @FXML
-    private CheckBox chckbxSelectAll;
+    private CheckBox checkBoxSelectAllDuplicates;
+
+    @FXML
+    private CheckBox checkBoxSelectAllFiles;
 
     @FXML
     private Button btnDeleteDuplicates;
@@ -81,10 +113,11 @@ public class Controller implements Initializable {
     private ImageView imageView;
 
     @FXML
-    private Button btnTest;
+    private TextArea textArea;
 
     @FXML
-    private TextArea textArea;
+    Label labelFileName;
+
 
     //asocierea coloanelor cu obiectul MyFileObjectWithCheckBox
     @Override
@@ -97,6 +130,17 @@ public class Controller implements Initializable {
         fileLastModifiedDateTableColumn.setCellValueFactory(new PropertyValueFactory<MyFileObjectWithCheckBox, String>("fileLastModifiedDate"));
         textArea.setEditable(false);
         readSelectedFile();
+        Image image = new Image(getClass().getResourceAsStream("images/plus.png"));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(25);
+        imageView.setFitWidth(25);
+        btnAddDirectory.setGraphic(imageView);
+        Image image2 = new Image(getClass().getResourceAsStream("images/minus.png"));
+        ImageView imageView2 = new ImageView(image2);
+        imageView2.setFitHeight(25);
+        imageView2.setFitWidth(25);
+        btnRemoveDirectory.setGraphic(imageView2);
+        vBoxARC.setSpacing(8);
     }
 
     //Toate ActionEvent din Step 1
@@ -104,7 +148,7 @@ public class Controller implements Initializable {
     public void btnAddDirectoryAddAction(ActionEvent event) {
         DirectoryChooser chooser = new DirectoryChooser();
         //!!! doar pentru calculatorul meu la urma trebuie de sters !!!
-        chooser.setInitialDirectory(new File("D:\\TestDuplicateFiles"));
+        //chooser.setInitialDirectory(new File("D:\\TestDuplicateFiles"));
         File selectedDirectory = chooser.showDialog(null);
         if (selectedDirectory != null) {
             list.getItems().add(selectedDirectory.getAbsolutePath());
@@ -130,6 +174,7 @@ public class Controller implements Initializable {
 
     //adauga ActionEvent pentru butonul btnStartScanAddAction
     public void btnStartScanAddAction(ActionEvent event) {
+        tableView.getItems().clear();
         // creaza constructorul
         GetFiles getFiles = new GetFiles();
         // creaza lista cu toate obiectele
@@ -137,12 +182,16 @@ public class Controller implements Initializable {
         List<MyFileObject> listOfDuplicates = new ArrayList<MyFileObject>(
                 getFiles.getDuplicateFilesFromList(listaCuObiecte, chckbxCompareByBytes.isSelected()));
 
+        tabPane.getSelectionModel().select(tabStep3);
         //scoate fiecare elemnt din lista de tip MyFileObject
         for (int i = 0; i < listOfDuplicates.size(); i++) {
-            System.out.println(listOfDuplicates.get(i).getFileName());
 
+            //progressBar.setProgress(i);
+            System.out.println(listOfDuplicates.get(i).getFileName());
             //Creaza un nou obiect de tip MyFileObjectWithCheckBox pentru a putea sa-l aduge in tabel cu CheckBox-uri
             MyFileObjectWithCheckBox myFileObjectWithCheckBox = new MyFileObjectWithCheckBox();
+            //progressBar.setProgress(i);
+
             CheckBox selectCheckBox = new CheckBox();
             selectCheckBox.setSelected(false);
             myFileObjectWithCheckBox.setFileCheckBox(selectCheckBox);
@@ -154,15 +203,20 @@ public class Controller implements Initializable {
             //adauga la fiecare rand obiectul de tip MyFileObjectWithCheckBox
             tableView.getItems().add(myFileObjectWithCheckBox);
             tableView.setEditable(true);
+            labelDuplicatesFound.setText(i + "");
         }
+
+
     }
 
     //Toate ActionEvent din Step 3
-    //Adauga ActionEvent pentu CheckBox-ul chckbxSelectAll
-    public void chckbxSelectAllAddAction(ActionEvent event) {
+    //Adauga ActionEvent pentu CheckBox-ul checkBoxSelectAllDuplicates
+    public void checkBoxSelectAllDuplicatesAddAction(ActionEvent event) {
 
-        if (chckbxSelectAll.isSelected()) {
-
+        if (checkBoxSelectAllDuplicates.isSelected()) {
+            if (checkBoxSelectAllFiles.isSelected()) {
+                checkBoxSelectAllFiles.setSelected(false);
+            }
             int testValueOfGroup = 0;
             for (int i = 0; i < tableView.getItems().size(); i++) {
                 int valueOfGroup = (Integer) tableView.getItems().get(i).getFileGroup();
@@ -194,6 +248,40 @@ public class Controller implements Initializable {
 
     }
 
+    //Adauga ActionEvent pentu CheckBox-ul chckbxSelectAllFiles
+    public void chckbxSelectAllFilesAddAction(ActionEvent event) {
+
+        if (checkBoxSelectAllFiles.isSelected()) {
+            if(checkBoxSelectAllDuplicates.isSelected()){
+                checkBoxSelectAllDuplicates.setSelected(false);
+            }
+            int testValueOfGroup = 0;
+            for (int i = 0; i < tableView.getItems().size(); i++) {
+                CheckBox checkBox = new CheckBox();
+                checkBox.setSelected(true);
+                tableView.getItems().get(i).setFileCheckBox(checkBox);
+                tableView.refresh();
+            }
+            System.out.println("is selected");
+        } else {
+
+            for (int i = 0; i < tableView.getItems().size(); i++) {
+                CheckBox checkBox = new CheckBox();
+                checkBox.setSelected(false);
+                tableView.getItems().get(i).setFileCheckBox(checkBox);
+                tableView.refresh();
+            }
+            System.out.println("is not selected");
+        }
+
+    }
+
+    //Adauga ActionEvent pentu butonul btnDeleteDuplicates
+    public void btnViewResultAddAction(ActionEvent event) {
+        System.out.println("step 3");
+        tabPane.getSelectionModel().select(tabStep3);
+    }
+
     //Adauga ActionEvent pentu butonul btnDeleteDuplicates
     public void btnDeleteDuplicatesAddAction(ActionEvent event) {
         System.out.println("delete");
@@ -218,12 +306,6 @@ public class Controller implements Initializable {
                 i--;
             }
         }
-
-        //selecteaza randul selectat
-//        MyFileObjectWithCheckBox myFileObjectWithCheckBox = tableView.getSelectionModel().getSelectedItem();
-//        System.out.println(myFileObjectWithCheckBox.getFileName());
-
-
     }
 
     //Adauga ActionEvent pentu butonul btnClearTable
@@ -232,105 +314,81 @@ public class Controller implements Initializable {
     }
 
 
-    public void showImageOnMpuseClicked() {
-//        tableView.setOnMouseClicked((MouseEvent event) -> {
-//            if (event.getButton().equals(MouseButton.PRIMARY)) {
-//                File imageFile = new File(tableView.getSelectionModel().getSelectedItem().getFilePath());
-//                System.out.println(imageFile);
-//                String fileLocation = imageFile.toURI().toString();
-//                System.out.println(fileLocation);
-//                Image image = new Image(fileLocation);
-//                imageView.setImage(image);
-//            }
-//        });
-    }
-
     public void btnTextAddAction() {
         textArea.setVisible(true);
-        //citeste un fisier de tip txt
-//        try {
-//            File file = new File("D:/TestDuplicateFiles/test1/propzitia1.txt");    //creates a new file instance
-//
-//            FileReader fileReader = new FileReader(file);   //reads the file
-//            BufferedReader bufferedReader = new BufferedReader(fileReader);  //creates a buffering character input stream
-//            StringBuffer stringBuffer = new StringBuffer();    //constructs a string buffer with no characters
-//            String line;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                stringBuffer.append(line);      //appends line to string buffer
-//                stringBuffer.append("\n");     //line feed
-//            }
-//            fileReader.close();    //closes the stream and release the resources
-//            System.out.println("Contents of File: ");
-//            System.out.println(stringBuffer.toString());   //returns a string that textually represents the object
-//            textArea.appendText(stringBuffer.toString());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            //textArea.setVisible(false);
-//        }
-        //citeste un fisier Word
-//        try {
-//            FileInputStream fileInputStream = new FileInputStream("word.docx");
-//            XWPFDocument docx = new XWPFDocument(fileInputStream);
-//            List<XWPFParagraph> paragraphList = docx.getParagraphs();
-//            for (XWPFParagraph paragraph : paragraphList){
-//                System.out.println(paragraph.getText());
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
     }
 
     public void readSelectedFile() {
         tableView.setOnMouseClicked((MouseEvent event) -> {
+            try {
+                File file = new File(tableView.getSelectionModel().getSelectedItem().getFilePath());
+                String path = tableView.getSelectionModel().getSelectedItem().getFilePath();
 
-            //verifica fisierele txt
-            File file = new File(tableView.getSelectionModel().getSelectedItem().getFilePath());
-            String path = tableView.getSelectionModel().getSelectedItem().getFilePath();
-            String fileExtension = path.substring(path.lastIndexOf('.')+1);
-            System.out.println(fileExtension);
-            if(fileExtension.equals("txt")){
-                textArea.clear();
-                textArea.setVisible(true);
-                try {
-                    FileReader fileReader = new FileReader(file);   //reads the file
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);  //creates a buffering character input stream
-                    StringBuffer stringBuffer = new StringBuffer();    //constructs a string buffer with no characters
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuffer.append(line);      //appends line to string buffer
-                        stringBuffer.append("\n");     //line feed
+                String fileExtension = path.substring(path.lastIndexOf('.') + 1);
+                System.out.println(fileExtension);
+                CenterImage centerImage = new CenterImage();
+                labelFileName.setText("File Name: " + tableView.getSelectionModel().getSelectedItem().getFileName());
+
+                //verifica fisierele txt
+                if (fileExtension.equals("txt")) {
+                    imageView.setVisible(false);
+                    textArea.clear();
+                    textArea.setVisible(true);
+                    try {
+                        //citeste fisierul
+                        FileReader fileReader = new FileReader(file);   //reads the file
+                        BufferedReader bufferedReader = new BufferedReader(fileReader);  //creates a buffering character input stream
+                        StringBuffer stringBuffer = new StringBuffer();    //constructs a string buffer with no characters
+                        String line;
+                        while ((line = bufferedReader.readLine()) != null) {
+                            stringBuffer.append(line);      //appends line to string buffer
+                            stringBuffer.append("\n");     //line feed
+                        }
+                        fileReader.close();    //closes the stream and release the resources
+                        System.out.println("Contents of File: ");
+                        System.out.println(stringBuffer.toString());   //returns a string that textually represents the object
+                        textArea.appendText(stringBuffer.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        textArea.setFont(new Font(34));
+                        textArea.setText("something is wrong");
                     }
-                    fileReader.close();    //closes the stream and release the resources
-                    System.out.println("Contents of File: ");
-                    System.out.println(stringBuffer.toString());   //returns a string that textually represents the object
-                    textArea.appendText(stringBuffer.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    textArea.setFont(new Font(34));
-                    textArea.setText("something is wrong");
+                } else if (fileExtension.equals("jpg") || fileExtension.equals("png") || fileExtension.equals("jpeg") || fileExtension.equals("gif")) {
+                    textArea.setVisible(false);
+                    imageView.setVisible(true);
+                    System.out.println(file);
+                    String fileLocation = file.toURI().toString();
+                    System.out.println(fileLocation);
+                    Image image = new Image(fileLocation);
+                    imageView.setImage(image);
+                    if (fileExtension.equals("jpg")) {
+                        centerImage.centerImageInImageView(image, imageView);
+                    }
+                } else if (fileExtension.equals("mp3")) {
+                    textArea.setVisible(false);
+                    imageView.setVisible(true);
+                    Image image = new Image(getClass().getResource("images/music.jpg").toString());
+                    imageView.setImage(image);
+                    centerImage.centerImageInImageView(image, imageView);
+                } else if (fileExtension.equals("mp4")) {
+                    textArea.setVisible(false);
+                    imageView.setVisible(true);
+                    Image image = new Image(getClass().getResource("images/video.png").toString());
+                    imageView.setImage(image);
+                } else {
+                    textArea.setVisible(false);
+                    imageView.setVisible(true);
+                    Image image = new Image(getClass().getResource("images/stop.jpg").toString());
+                    imageView.setImage(image);
                 }
-            }else if (fileExtension.equals("jpg") || fileExtension.equals("png") || fileExtension.equals("jpeg") || fileExtension.equals("gif")){
-                textArea.setVisible(false);
-                System.out.println(file);
-                String fileLocation = file.toURI().toString();
-                System.out.println(fileLocation);
-                Image image = new Image(fileLocation);
-
-                imageView.setImage(image);
-            }else {
-                textArea.setVisible(true);
-                textArea.setFont(new Font(35));
-                textArea.setStyle("-fx-text-alignment: center");
-                textArea.setText("Can't read the file");
+            } catch (Exception exception) {
+                exception.getStackTrace();
             }
 
         });
 
     }
-
 
 
 }

@@ -1,6 +1,9 @@
 package licenta.DuplicateFinder;
 
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -11,8 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+
+
 public class GetFiles {
-    // functia ce permite sa returneze fisierele dintr-un singur folder
+
+    // functia ce returneze fisierele dintr-un singur folder
     public List<MyFileObject> listFilesForFolder(File folder) {
         List<MyFileObject> listOfMyFileObjects = new ArrayList<MyFileObject>();
 
@@ -35,7 +41,7 @@ public class GetFiles {
         }
         return listOfMyFileObjects;
     }
-
+    // functia ce returneze fisierele dintr-o lista (lista contine path-ul catre folder)
     public List<MyFileObject> getAllFilesFromFolders(List<String> list) {
         List<MyFileObject> listOfMyFileObjects = new ArrayList<MyFileObject>();
         for (int i = 0; i < list.size(); i++) {
@@ -44,8 +50,10 @@ public class GetFiles {
             File folder = new File(valueFromListString);
             List<MyFileObject> listOfSingleFolder = listFilesForFolder(folder);
             listOfMyFileObjects.addAll(listOfSingleFolder);
+
         }
         return listOfMyFileObjects;
+
     }
 
     public List<MyFileObject> getDuplicateFilesFromList(List<MyFileObject> listOfAllFiles, boolean compareByBytes) {
@@ -89,13 +97,9 @@ public class GetFiles {
                         }
                         fileGroup++;
                     }
-
                 }
-
             }
-
         }
-
         return listOfDuplicates;
     }
 
@@ -107,7 +111,6 @@ public class GetFiles {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return contentBuilder.toString();
     }
 
