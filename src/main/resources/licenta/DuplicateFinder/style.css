@@ -28,7 +28,6 @@
     -fx-font-weight: bold ;
     -fx-text-fill:  #32cd32;
 }
-
 .button:hover {
 -fx-background-color: #00008B;
 }
@@ -77,3 +76,16 @@
 -fx-background-color: #28a3f4;
 }
 
+#progressLabel{
+    -fx-font-family: 'Arial Unicode MS' ;
+    -fx-font-size: 15px ;
+    -fx-font-weight: bold ;
+    -fx-text-fill:  #FFFFFF;
+}
+#labelFileType{
+    -fx-font-family: 'Arial Unicode MS' ;
+    -fx-font-size: 60px ;
+    -fx-font-weight: bold ;
+    -fx-text-fill:  #ff0000;
+    -fx-alignment: center ;
+}
