@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-
 public class Controller implements Initializable {
 
     @FXML
@@ -196,128 +195,131 @@ public class Controller implements Initializable {
 
     //adauga ActionEvent pentru butonul btnStartScanAddAction
     public void btnStartScanAddAction(ActionEvent event) {
-        TypeOfFile countTypeOfFile = new TypeOfFile();
-        SizeOfFile sizeOfFile = new SizeOfFile();
-        tableView.getItems().clear();
-        //selecteaza tab-ul 2 din tabPane
-        tabPane.getSelectionModel().select(tabStep2);
-        //creaza un task Worker
-        Task<Void> task = new Task<Void>() {
+        if (list.getItems().size() != 0) {
+            TypeOfFile countTypeOfFile = new TypeOfFile();
+            SizeOfFile sizeOfFile = new SizeOfFile();
+            tableView.getItems().clear();
+            //selecteaza tab-ul 2 din tabPane
+            tabPane.getSelectionModel().select(tabStep2);
+            //creaza un task Worker
+            Task<Void> task = new Task<Void>() {
 
-            @Override
-            protected Void call() throws Exception {
-                GetFiles getFiles = new GetFiles();
-                List<MyFileObject> listaCuObiecte = new ArrayList<MyFileObject>(getFiles.getAllFilesFromFolders(list.getItems()));
-                List<MyFileObject> listOfDuplicates = new ArrayList<MyFileObject>(
-                        getFiles.getDuplicateFilesFromList(listaCuObiecte, chckbxCompareByBytes.isSelected()));
+                @Override
+                protected Void call() throws Exception {
+                    GetFiles getFiles = new GetFiles();
+                    List<MyFileObject> listaCuObiecte = new ArrayList<MyFileObject>(getFiles.getAllFilesFromFolders(list.getItems()));
+                    List<MyFileObject> listOfDuplicates = new ArrayList<MyFileObject>(
+                            getFiles.getDuplicateFilesFromList(listaCuObiecte, chckbxCompareByBytes.isSelected()));
 
-                //scoate fiecare elemnt din lista de tip MyFileObject
-                for (int i = 0; i < listOfDuplicates.size(); i++) {
+                    //scoate fiecare elemnt din lista de tip MyFileObject
+                    for (int i = 0; i < listOfDuplicates.size(); i++) {
 
-                    System.out.println(listOfDuplicates.get(i).getFileName());
-                    String path = listOfDuplicates.get(i).getFilePath();
-                    String fileExtension = path.substring(path.lastIndexOf('.') + 1);
-                    double fileSize = listOfDuplicates.get(i).getFileSize();
+                        System.out.println(listOfDuplicates.get(i).getFileName());
+                        String path = listOfDuplicates.get(i).getFilePath();
+                        String fileExtension = path.substring(path.lastIndexOf('.') + 1);
+                        double fileSize = listOfDuplicates.get(i).getFileSize();
 
-                    switch (fileExtension) {
-                        case "txt":
-                        case "doc":
-                        case "docx":
-                        case "pdf":
-                            countTypeOfFile.setTextFiles(countTypeOfFile.getTextFiles() + 1);
-                            sizeOfFile.setTextFileSize(sizeOfFile.getTextFileSize() + fileSize);
-                            break;
-                        case "jpg":
-                        case "jpeg":
-                        case "gif":
-                        case "png":
-                            countTypeOfFile.setImageFiles(countTypeOfFile.getImageFiles() + 1);
-                            sizeOfFile.setImageFileSize(sizeOfFile.getImageFileSize() + fileSize);
-                            break;
-                        case "mp3":
-                        case "wav":
-                        case "wma":
-                        case "aac":
-                        case "m4a":
-                        case "flac":
-                            countTypeOfFile.setMusicFiles(countTypeOfFile.getMusicFiles() + 1);
-                            sizeOfFile.setMusicFileSize(sizeOfFile.getMusicFileSize() + fileSize);
-                            break;
-                        case "mp4":
-                        case "webm":
-                        case "mkv":
-                        case "flv":
-                            countTypeOfFile.setVideoFiles(countTypeOfFile.getVideoFiles() + 1);
-                            sizeOfFile.setVideoFileSize(sizeOfFile.getVideoFileSize() + fileSize);
-                            break;
-                        default:
-                            countTypeOfFile.setUnknownFiles(countTypeOfFile.getUnknownFiles() + 1);
-                            sizeOfFile.setUnknownFileSize(sizeOfFile.getUnknownFileSize() + fileSize);
+                        switch (fileExtension) {
+                            case "txt":
+                            case "doc":
+                            case "docx":
+                            case "pdf":
+                                countTypeOfFile.setTextFiles(countTypeOfFile.getTextFiles() + 1);
+                                sizeOfFile.setTextFileSize(sizeOfFile.getTextFileSize() + fileSize);
+                                break;
+                            case "jpg":
+                            case "jpeg":
+                            case "gif":
+                            case "png":
+                                countTypeOfFile.setImageFiles(countTypeOfFile.getImageFiles() + 1);
+                                sizeOfFile.setImageFileSize(sizeOfFile.getImageFileSize() + fileSize);
+                                break;
+                            case "mp3":
+                            case "wav":
+                            case "wma":
+                            case "aac":
+                            case "m4a":
+                            case "flac":
+                                countTypeOfFile.setMusicFiles(countTypeOfFile.getMusicFiles() + 1);
+                                sizeOfFile.setMusicFileSize(sizeOfFile.getMusicFileSize() + fileSize);
+                                break;
+                            case "mp4":
+                            case "webm":
+                            case "mkv":
+                            case "flv":
+                                countTypeOfFile.setVideoFiles(countTypeOfFile.getVideoFiles() + 1);
+                                sizeOfFile.setVideoFileSize(sizeOfFile.getVideoFileSize() + fileSize);
+                                break;
+                            default:
+                                countTypeOfFile.setUnknownFiles(countTypeOfFile.getUnknownFiles() + 1);
+                                sizeOfFile.setUnknownFileSize(sizeOfFile.getUnknownFileSize() + fileSize);
+                        }
+
+                        //Creaza un nou obiect de tip MyFileObjectWithCheckBox pentru a putea sa-l aduge in tabel cu CheckBox-uri
+                        MyFileObjectWithCheckBox myFileObjectWithCheckBox = new MyFileObjectWithCheckBox();
+                        //creaza un checkBox pentru obiectul de tip MyFileObjectWithCheckBox
+                        CheckBox selectCheckBox = new CheckBox();
+                        selectCheckBox.setSelected(false);
+                        myFileObjectWithCheckBox.setFileCheckBox(selectCheckBox);
+                        myFileObjectWithCheckBox.setFileName(listOfDuplicates.get(i).getFileName());
+                        myFileObjectWithCheckBox.setFilePath(listOfDuplicates.get(i).getFilePath());
+                        myFileObjectWithCheckBox.setFileSize(listOfDuplicates.get(i).getFileSize());
+                        myFileObjectWithCheckBox.setFileGroup(listOfDuplicates.get(i).getFileGroup());
+                        myFileObjectWithCheckBox.setFileLastModifiedDate(listOfDuplicates.get(i).getFileLastModifiedDate());
+                        //adauga la fiecare rand obiectul de tip MyFileObjectWithCheckBox
+                        tableView.getItems().add(myFileObjectWithCheckBox);
+                        tableView.setEditable(true);
+                        updateProgress(i, listOfDuplicates.size() - 1);
+                        updateMessage(listOfDuplicates.get(i).getFilePath());
+                        //Thread.sleep(250);
                     }
-
-                    //Creaza un nou obiect de tip MyFileObjectWithCheckBox pentru a putea sa-l aduge in tabel cu CheckBox-uri
-                    MyFileObjectWithCheckBox myFileObjectWithCheckBox = new MyFileObjectWithCheckBox();
-                    //creaza un checkBox pentru obiectul de tip MyFileObjectWithCheckBox
-                    CheckBox selectCheckBox = new CheckBox();
-                    selectCheckBox.setSelected(false);
-                    myFileObjectWithCheckBox.setFileCheckBox(selectCheckBox);
-                    myFileObjectWithCheckBox.setFileName(listOfDuplicates.get(i).getFileName());
-                    myFileObjectWithCheckBox.setFilePath(listOfDuplicates.get(i).getFilePath());
-                    myFileObjectWithCheckBox.setFileSize(listOfDuplicates.get(i).getFileSize());
-                    myFileObjectWithCheckBox.setFileGroup(listOfDuplicates.get(i).getFileGroup());
-                    myFileObjectWithCheckBox.setFileLastModifiedDate(listOfDuplicates.get(i).getFileLastModifiedDate());
-                    //adauga la fiecare rand obiectul de tip MyFileObjectWithCheckBox
-                    tableView.getItems().add(myFileObjectWithCheckBox);
-                    tableView.setEditable(true);
-                    updateProgress(i, listOfDuplicates.size() - 1);
-                    updateMessage(listOfDuplicates.get(i).getFilePath());
-                    //Thread.sleep(50);
+                    return null;
                 }
-                return null;
-            }
-        };
+            };
 
-        task.messageProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                progressLabel.setText("Read: " + t1);
-                //creaza datele pentru numarul de fisiere
-                ObservableList<PieChart.Data> pieDataOfFiles = FXCollections.observableArrayList(
-                        new PieChart.Data("Text", countTypeOfFile.getTextFiles()),
-                        new PieChart.Data("Music", countTypeOfFile.getMusicFiles()),
-                        new PieChart.Data("Video", countTypeOfFile.getVideoFiles()),
-                        new PieChart.Data("Picture", countTypeOfFile.getImageFiles()),
-                        new PieChart.Data("Other", countTypeOfFile.getUnknownFiles())
-                );
-                //asigneaza datele in Pichart
-                pieChartOfFiles.setData(pieDataOfFiles);
-                pieChartOfFiles.setTitle("Files");
+            task.messageProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    progressLabel.setText("Read: " + t1);
+                    //creaza datele pentru numarul de fisiere
+                    ObservableList<PieChart.Data> pieDataOfFiles = FXCollections.observableArrayList(
+                            new PieChart.Data("Text", countTypeOfFile.getTextFiles()),
+                            new PieChart.Data("Music", countTypeOfFile.getMusicFiles()),
+                            new PieChart.Data("Video", countTypeOfFile.getVideoFiles()),
+                            new PieChart.Data("Picture", countTypeOfFile.getImageFiles()),
+                            new PieChart.Data("Other", countTypeOfFile.getUnknownFiles())
+                    );
+                    //asigneaza datele in Pichart
+                    pieChartOfFiles.setData(pieDataOfFiles);
+                    pieChartOfFiles.setTitle("Files");
 
-                //creaza datele pentru numarul de spatiul folosit
-                ObservableList<PieChart.Data> pieDataUsedSpace = FXCollections.observableArrayList(
-                        new PieChart.Data("Text", sizeOfFile.getTextFileSize()),
-                        new PieChart.Data("Music", sizeOfFile.getMusicFileSize()),
-                        new PieChart.Data("Video", sizeOfFile.getVideoFileSize()),
-                        new PieChart.Data("Picture", sizeOfFile.getImageFileSize()),
-                        new PieChart.Data("Other", sizeOfFile.getUnknownFileSize())
-                );
-                //asigneaza datele in Pichart
-                pieChartUsedSpace.setData(pieDataUsedSpace);
-                pieChartUsedSpace.setTitle("Used Space");
+                    //creaza datele pentru numarul de spatiul folosit
+                    ObservableList<PieChart.Data> pieDataUsedSpace = FXCollections.observableArrayList(
+                            new PieChart.Data("Text", sizeOfFile.getTextFileSize()),
+                            new PieChart.Data("Music", sizeOfFile.getMusicFileSize()),
+                            new PieChart.Data("Video", sizeOfFile.getVideoFileSize()),
+                            new PieChart.Data("Picture", sizeOfFile.getImageFileSize()),
+                            new PieChart.Data("Other", sizeOfFile.getUnknownFileSize())
+                    );
+                    //asigneaza datele in Pichart
+                    pieChartUsedSpace.setData(pieDataUsedSpace);
+                    pieChartUsedSpace.setTitle("Used Space");
 
 
-            }
-        });
-        //sterge valoaile din progressBar-ul anterior
-        progressBar.progressProperty().unbind();
-        //leaga progressBar cu task worker
-        progressBar.progressProperty().bind(task.progressProperty());
-        //creza un fir de executie
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
+                }
+            });
+            //sterge valoaile din progressBar-ul anterior
+            progressBar.progressProperty().unbind();
+            //leaga progressBar cu task worker
+            progressBar.progressProperty().bind(task.progressProperty());
+            //creza un fir de executie
+            Thread thread = new Thread(task);
+            thread.setDaemon(true);
+            thread.start();
 
-
+        } else {
+            System.out.println("Introdu un director");
+        }
     }
 
     //Toate ActionEvent din Step 3
@@ -356,7 +358,6 @@ public class Controller implements Initializable {
             }
             System.out.println("is not selected");
         }
-
     }
 
     //Adauga ActionEvent pentu CheckBox-ul chckbxSelectAllFiles
@@ -430,15 +431,16 @@ public class Controller implements Initializable {
     }
 
     public void readSelectedFile() {
-
         tableView.setOnMouseClicked((MouseEvent event) -> {
-            if(event.getClickCount() == 2 && !event.isConsumed()){
+            if (event.getClickCount() == 2 && !event.isConsumed()) {
                 event.consume();
-                File file = new File(tableView.getSelectionModel().getSelectedItem().getFilePath());
                 String path = tableView.getSelectionModel().getSelectedItem().getFilePath();
-                file.toPath();
-                System.out.println("double click");
-
+                try {
+                    //ruleaza o comanda din cmd
+                    Process builder = Runtime.getRuntime().exec("cmd /c explorer.exe /select, " + path);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             try {
                 File file = new File(tableView.getSelectionModel().getSelectedItem().getFilePath());
@@ -474,6 +476,9 @@ public class Controller implements Initializable {
                         textArea.setFont(new Font(34));
                         textArea.setText("something is wrong");
                     }
+//                } else if (fileExtension.equals("docx")) {
+//                    FileInputStream fileInputStream = new FileInputStream(file.getAbsolutePath());
+
                 } else if (fileExtension.equals("jpg") || fileExtension.equals("png") || fileExtension.equals("jpeg") || fileExtension.equals("gif")) {
                     textArea.setVisible(false);
                     imageView.setVisible(true);

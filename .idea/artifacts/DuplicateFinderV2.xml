@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="DuplicateFinderV2">
+    <output-path>$PROJECT_DIR$/out/artifacts/DuplicateFinderV2</output-path>
+    <root id="root">
+      <element id="archive" name="DuplicateFinderV2.jar">
+        <element id="module-output" name="DuplicateFinderV2" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/src/main/java/licenta/DuplicateFinder/META-INF/MANIFEST.MF" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

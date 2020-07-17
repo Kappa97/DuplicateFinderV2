@@ -1,15 +1,11 @@
 package licenta.DuplicateFinder;
 
-import javafx.beans.property.SimpleStringProperty;
-
 public class MyFileObject {
     private String fileName;
     private String filePath;
     private double fileSize;
     private int fileGroup;
     private String fileLastModifiedDate;
-
-
 
     public String getFileName() {
         return fileName;
@@ -41,5 +37,4 @@ public class MyFileObject {
     public void setFileLastModifiedDate(String fileLastModifiedDate) {
         this.fileLastModifiedDate = fileLastModifiedDate;
     }
-
 }

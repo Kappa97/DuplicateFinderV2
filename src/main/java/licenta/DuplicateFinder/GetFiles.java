@@ -15,32 +15,33 @@ import java.util.List;
 import java.util.stream.Stream;
 
 
-
 public class GetFiles {
 
     // functia ce returneze fisierele dintr-un singur folder
     public List<MyFileObject> listFilesForFolder(File folder) {
         List<MyFileObject> listOfMyFileObjects = new ArrayList<MyFileObject>();
-
-        for (File fileEntry : folder.listFiles()) {
-            if (fileEntry.isDirectory()) {
-                listFilesForFolder(fileEntry);
-            } else {
-                MyFileObject myFileObject = new MyFileObject();
-                myFileObject.setFileName(fileEntry.getName());
-                myFileObject.setFilePath(fileEntry.getPath());
-                myFileObject.setFileGroup(1);
-                double sizeOfFile = Math.floor((double) fileEntry.length() / (1024) * 1000) / 1000;
-                myFileObject.setFileSize(sizeOfFile);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-                myFileObject.setFileLastModifiedDate(simpleDateFormat.format(fileEntry.lastModified()));
-                listOfMyFileObjects.add(myFileObject);
-
-
+        try {
+            for (File fileEntry : folder.listFiles()) {
+                if (fileEntry.isDirectory()) {
+                    listFilesForFolder(fileEntry);
+                } else {
+                    MyFileObject myFileObject = new MyFileObject();
+                    myFileObject.setFileName(fileEntry.getName());
+                    myFileObject.setFilePath(fileEntry.getPath());
+                    myFileObject.setFileGroup(1);
+                    double sizeOfFile = Math.floor((double) fileEntry.length() / (1024) * 1000) / 1000;
+                    myFileObject.setFileSize(sizeOfFile);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                    myFileObject.setFileLastModifiedDate(simpleDateFormat.format(fileEntry.lastModified()));
+                    listOfMyFileObjects.add(myFileObject);
+                }
             }
+        } catch (Exception ex) {
+            System.out.println("Folder not found exception");
         }
         return listOfMyFileObjects;
     }
+
     // functia ce returneze fisierele dintr-o lista (lista contine path-ul catre folder)
     public List<MyFileObject> getAllFilesFromFolders(List<String> list) {
         List<MyFileObject> listOfMyFileObjects = new ArrayList<MyFileObject>();
@@ -50,10 +51,8 @@ public class GetFiles {
             File folder = new File(valueFromListString);
             List<MyFileObject> listOfSingleFolder = listFilesForFolder(folder);
             listOfMyFileObjects.addAll(listOfSingleFolder);
-
         }
         return listOfMyFileObjects;
-
     }
 
     public List<MyFileObject> getDuplicateFilesFromList(List<MyFileObject> listOfAllFiles, boolean compareByBytes) {
@@ -126,21 +125,36 @@ public class GetFiles {
         try {
             firstFileInByte = Files.readAllBytes(Paths.get(myFileObject1.getFilePath()));
             secondFileInByte = Files.readAllBytes(Paths.get(myFileObject2.getFilePath()));
-            for (int i = 0; i < numberOfFirstBytes; i++) {
-                bytesForFirstString = bytesForFirstString + firstFileInByte[i];
-                bytesForSecondString = bytesForSecondString + secondFileInByte[i];
+            try {
+                for (int i = 0; i < numberOfFirstBytes; i++) {
+                    bytesForFirstString = bytesForFirstString + firstFileInByte[i];
+                    bytesForSecondString = bytesForSecondString + secondFileInByte[i];
+                }
+            } catch (Exception e) {
+                System.out.println("Exception for first 10 bytes");
             }
+
             numberOfAllBytes = firstFileInByte.length;
             numberOfLastBytes = numberOfAllBytes - numberOfLastBytes;
+            try {
+                for (int i = numberOfLastBytes; i < numberOfAllBytes; i++) {
+                    bytesForFirstString = bytesForFirstString + firstFileInByte[i];
+                    bytesForSecondString = bytesForSecondString + secondFileInByte[i];
+                }
+            } catch (Exception ex) {
+                System.out.println("Exception for last 10 bytes");
+            }
 
-            for (int i = numberOfLastBytes; i < numberOfAllBytes; i++) {
-                bytesForFirstString = bytesForFirstString + firstFileInByte[i];
-                bytesForSecondString = bytesForSecondString + secondFileInByte[i];
+            try {
+                for (int i = numberOfLastBytes; i < numberOfAllBytes / 2; i++) {
+                    bytesForFirstString = bytesForFirstString + firstFileInByte[i];
+                    bytesForSecondString = bytesForSecondString + secondFileInByte[i];
+                }
+            } catch (Exception ex) {
+                System.out.println("Exception for 10 bytes from middle");
             }
-            for (int i = numberOfLastBytes; i < numberOfAllBytes / 2; i++) {
-                bytesForFirstString = bytesForFirstString + firstFileInByte[i];
-                bytesForSecondString = bytesForSecondString + secondFileInByte[i];
-            }
+
+
             System.out.println(bytesForFirstString);
             System.out.println(bytesForSecondString);
         } catch (IOException e) {
