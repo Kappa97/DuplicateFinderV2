@@ -102,16 +102,16 @@ public class GetFiles {
         return listOfDuplicates;
     }
 
-    public static String readLineByLineJava8(String filePath) {
-        StringBuilder contentBuilder = new StringBuilder();
-
-        try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> contentBuilder.append(s).append("\n"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contentBuilder.toString();
-    }
+//    public static String readLineByLineJava8(String filePath) {
+//        StringBuilder contentBuilder = new StringBuilder();
+//
+//        try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
+//            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return contentBuilder.toString();
+//    }
 
     public boolean compareTwoFilesByBites(MyFileObject myFileObject1, MyFileObject myFileObject2) {
         byte[] firstFileInByte = null;
@@ -125,6 +125,7 @@ public class GetFiles {
         try {
             firstFileInByte = Files.readAllBytes(Paths.get(myFileObject1.getFilePath()));
             secondFileInByte = Files.readAllBytes(Paths.get(myFileObject2.getFilePath()));
+
             try {
                 for (int i = 0; i < numberOfFirstBytes; i++) {
                     bytesForFirstString = bytesForFirstString + firstFileInByte[i];
