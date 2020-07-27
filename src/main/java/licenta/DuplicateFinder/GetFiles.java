@@ -6,9 +6,12 @@ import javafx.scene.control.Label;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +58,7 @@ public class GetFiles {
         return listOfMyFileObjects;
     }
 
-    public List<MyFileObject> getDuplicateFilesFromList(List<MyFileObject> listOfAllFiles, boolean compareByBytes) {
+    public List<MyFileObject> getDuplicateFilesFromList(List<MyFileObject> listOfAllFiles, boolean compareByBytes, boolean compareBySHA512) {
         List<MyFileObject> listOfFiles = new ArrayList<MyFileObject>(listOfAllFiles);
         List<MyFileObject> listOfDuplicates = new ArrayList<MyFileObject>();
         int fileGroup = 1;
@@ -70,13 +73,20 @@ public class GetFiles {
 
                 if (myFileObjectOriginal.getFileSize() == myFileObjectDuplicat.getFileSize()) {
                     boolean isEqualByBytes;
+                    boolean isEqualBySHA512;
                     if (compareByBytes == true) {
                         isEqualByBytes = compareTwoFilesByBites(myFileObjectOriginal, myFileObjectDuplicat);
                         System.out.println(isEqualByBytes);
+                        isEqualBySHA512 = true;
                     } else {
+                        if (compareBySHA512 == true) {
+                            isEqualBySHA512 = compareTwoFilesBySH512(myFileObjectOriginal, myFileObjectDuplicat);
+                        } else {
+                            isEqualBySHA512 = true;
+                        }
                         isEqualByBytes = true;
                     }
-                    if (isEqualByBytes) {
+                    if (isEqualByBytes == true && isEqualBySHA512 == true) {
                         if (originalFileIsAdded == false) {
                             // adauga in lista si fisierul original
                             myFileObjectOriginal.setFileGroup(fileGroup);
@@ -147,7 +157,7 @@ public class GetFiles {
             }
 
             try {
-                for (int i = numberOfLastBytes; i < numberOfAllBytes / 2; i++) {
+                for (int i = numberOfAllBytes / 2; i < numberOfAllBytes / 2 + 10; i++) {
                     bytesForFirstString = bytesForFirstString + firstFileInByte[i];
                     bytesForSecondString = bytesForSecondString + secondFileInByte[i];
                 }
@@ -170,6 +180,50 @@ public class GetFiles {
     }
 
     public boolean compareTwoFilesBySH512(MyFileObject myFileObject1, MyFileObject myFileObject2) {
-        return true;
+        byte[] firstFileInByte = null;
+        byte[] secondFileInByte = null;
+        String firstFileInByteEncripted = "";
+        String secondFileInByteEncripted = "";
+        try {
+            firstFileInByte = Files.readAllBytes(Paths.get(myFileObject1.getFilePath()));
+            secondFileInByte = Files.readAllBytes(Paths.get(myFileObject2.getFilePath()));
+
+            String firstFileInByteToString = new String(firstFileInByte, StandardCharsets.UTF_8);
+            String secondFileInByteToString = new String(secondFileInByte, StandardCharsets.UTF_8);
+            firstFileInByteEncripted = encryptString(firstFileInByteToString);
+            secondFileInByteEncripted = encryptString(secondFileInByteToString);
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        //StringBuilder firstFileStringBuilder = new StringBuilder("");
+        //firstFileStringBuilder.append(firstFileInByte);
+
+        //StringBuilder secondFileStringBuilder = new StringBuilder("");
+        //secondFileStringBuilder.append(secondFileInByte);
+        if (firstFileInByteEncripted.equals(secondFileInByteEncripted)) {
+            System.out.println(firstFileInByteEncripted);
+            System.out.println(secondFileInByteEncripted);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public String encryptString(String input) {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+            byte[] messageDigestByte = messageDigest.digest(input.getBytes());
+            BigInteger bigInteger = new BigInteger(1, messageDigestByte);
+            String hashtext = bigInteger.toString(16);
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            return hashtext;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

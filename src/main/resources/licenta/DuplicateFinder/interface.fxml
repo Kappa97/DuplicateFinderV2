@@ -35,7 +35,8 @@
                                               <Button fx:id="btnAddDirectory" mnemonicParsing="false" onAction="#btnAddDirectoryAddAction" prefHeight="72.0" prefWidth="266.0" styleClass="style.css" text="Add Directory" textAlignment="CENTER" />
                                               <Button fx:id="btnRemoveDirectory" mnemonicParsing="false" onAction="#btnRemoveDirectoryAddAction" prefHeight="76.0" prefWidth="250.0" text="Remove Directory" />
                                               <Button fx:id="btnClear" mnemonicParsing="false" onAction="#btnClearAddAction" prefHeight="74.0" prefWidth="250.0" text="Clear" />
-                                              <CheckBox fx:id="chckbxCompareByBytes" mnemonicParsing="false" prefHeight="26.0" prefWidth="246.0" text="Compare by bytes" />
+                                              <CheckBox fx:id="chckbxCompareByBytes" mnemonicParsing="false" onAction="#chckbxCompareByBytesAddAction" prefHeight="26.0" prefWidth="246.0" text="Compare by bytes" />
+                                    <CheckBox fx:id="checkBoxCompareBySHA512" mnemonicParsing="false" onAction="#checkBoxCompareBySHA512AddAction" text="Compare by SHA-512" />
                                  </children>
                               </VBox>
                               <Label fx:id="labelAddFolder" layoutX="190.0" layoutY="14.0" stylesheets="@style.css" text="Add folders to include in the scan" />

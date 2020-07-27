@@ -122,6 +122,9 @@ public class Controller implements Initializable {
     private CheckBox checkBoxSelectAllFiles;
 
     @FXML
+    private CheckBox checkBoxCompareBySHA512;
+
+    @FXML
     private Button btnDeleteDuplicates;
 
     @FXML
@@ -209,7 +212,7 @@ public class Controller implements Initializable {
                     GetFiles getFiles = new GetFiles();
                     List<MyFileObject> listaCuObiecte = new ArrayList<MyFileObject>(getFiles.getAllFilesFromFolders(list.getItems()));
                     List<MyFileObject> listOfDuplicates = new ArrayList<MyFileObject>(
-                            getFiles.getDuplicateFilesFromList(listaCuObiecte, chckbxCompareByBytes.isSelected()));
+                            getFiles.getDuplicateFilesFromList(listaCuObiecte, chckbxCompareByBytes.isSelected(), checkBoxCompareBySHA512.isSelected()));
 
                     //scoate fiecare elemnt din lista de tip MyFileObject
                     for (int i = 0; i < listOfDuplicates.size(); i++) {
@@ -271,7 +274,7 @@ public class Controller implements Initializable {
                         tableView.setEditable(true);
                         updateProgress(i, listOfDuplicates.size() - 1);
                         updateMessage(listOfDuplicates.get(i).getFilePath());
-                        //Thread.sleep(250);
+                        //Thread.sleep(100);
                     }
                     return null;
                 }
@@ -308,7 +311,7 @@ public class Controller implements Initializable {
 
                 }
             });
-            //sterge valoaile din progressBar-ul anterior
+            //sterge valorile din progressBar-ul anterior
             progressBar.progressProperty().unbind();
             //leaga progressBar cu task worker
             progressBar.progressProperty().bind(task.progressProperty());
@@ -322,6 +325,24 @@ public class Controller implements Initializable {
         }
     }
 
+    public void chckbxCompareByBytesAddAction(ActionEvent event){
+        if (chckbxCompareByBytes.isSelected()){
+            System.out.println("este selectat dupa biti");
+            checkBoxCompareBySHA512.setSelected(false);
+        }else{
+            System.out.println("nu este selectat dupa biti");
+        }
+    }
+    public void checkBoxCompareBySHA512AddAction(ActionEvent event){
+        if (checkBoxCompareBySHA512.isSelected()){
+            System.out.println("este selectat dupa sha512");
+            chckbxCompareByBytes.setSelected(false);
+        }else{
+            System.out.println("nu este selectat dupa sha512");
+        }
+    }
+
+
     //Toate ActionEvent din Step 3
     //Adauga ActionEvent pentu CheckBox-ul checkBoxSelectAllDuplicates
     public void checkBoxSelectAllDuplicatesAddAction(ActionEvent event) {
@@ -330,22 +351,22 @@ public class Controller implements Initializable {
             if (checkBoxSelectAllFiles.isSelected()) {
                 checkBoxSelectAllFiles.setSelected(false);
             }
-            int testValueOfGroup = 0;
+            int testValueOfGroup = 1;
+
             for (int i = 0; i < tableView.getItems().size(); i++) {
                 int valueOfGroup = (Integer) tableView.getItems().get(i).getFileGroup();
                 if (testValueOfGroup == valueOfGroup) {
+                    CheckBox checkBox2 = new CheckBox();
+                    checkBox2.setSelected(false);
+                    tableView.getItems().get(i).setFileCheckBox(checkBox2);
+                    tableView.refresh();
+                    testValueOfGroup++;
+                } else {
                     CheckBox checkBox = new CheckBox();
                     checkBox.setSelected(true);
                     tableView.getItems().get(i).setFileCheckBox(checkBox);
                     tableView.refresh();
-                } else {
-                    CheckBox checkBox = new CheckBox();
-                    checkBox.setSelected(false);
-                    tableView.getItems().get(i).setFileCheckBox(checkBox);
-                    tableView.refresh();
-                    testValueOfGroup++;
                 }
-
             }
             System.out.println("is selected");
         } else {

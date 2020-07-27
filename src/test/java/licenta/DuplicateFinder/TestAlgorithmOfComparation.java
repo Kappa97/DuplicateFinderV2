@@ -42,8 +42,8 @@ public class TestAlgorithmOfComparation {
         myFileObject2.setFileSize(file2.getUsableSpace());
         myFileObject2.setFileLastModifiedDate(simpleDateFormat.format(file2.lastModified()));
 
-        FileUtils.writeStringToFile(file1, "en acest rand se testeaza continutul unui fisier");
-        FileUtils.writeStringToFile(file2, "in acest rand se testeaza continutul unui fisier");
+        FileUtils.writeStringToFile(file1, "in acest rand se testeaza continutul unui fisier");
+        FileUtils.writeStringToFile(file2, "en acest rand se testeaza continutul unui fisier");
 
         GetFiles getFiles = new GetFiles();
         List list = new ArrayList();
@@ -51,11 +51,11 @@ public class TestAlgorithmOfComparation {
 
         Assert.assertNotEquals(0, getFiles.listFilesForFolder(temporaryFolder1.getRoot()).size());
         System.out.println("Algoritmul comparat dupa marimea fisierului");
-        System.out.println(getFiles.getDuplicateFilesFromList(list, false));
-        Assert.assertNotEquals(0, getFiles.getDuplicateFilesFromList(list, false).size());
+        System.out.println(getFiles.getDuplicateFilesFromList(list, false, false));
+        Assert.assertNotEquals(0, getFiles.getDuplicateFilesFromList(list, false, false).size());
 
-        Assert.assertEquals(0, getFiles.getDuplicateFilesFromList(list, true).size());
+        Assert.assertEquals(0, getFiles.getDuplicateFilesFromList(list, true, true).size());
         System.out.println("\nAlgoritmul comparat dupa continutul fisierului");
-        System.out.println(getFiles.getDuplicateFilesFromList(list, true));
+        System.out.println(getFiles.getDuplicateFilesFromList(list, true, true));
     }
 }
